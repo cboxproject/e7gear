@@ -27,7 +27,7 @@
             { top: 350, left: 305, width: 110, height: 80, threshold: 80, zoom: 2, lng: "eng" },    //メインop数値
             { top: 213, left: 65, width: 24, height: 18, threshold: 90, zoom: 2, lng: "eng" },      //レベル(通常)
             { top: 193, left: 130, width: 45, height: 30, threshold: 180, zoom: 5, lng: "eng" },    //強化(通常)
-            { top: 188, left: 65, width: 24, height: 18, threshold: 90, zoom: 2, lng: "eng" },      //レベル(裂傷)
+            { top: 188, left: 65, width: 24, height: 18, threshold: 110, zoom: 2, lng: "eng" },      //レベル(裂傷)
             { top: 167, left: 130, width: 45, height: 30, threshold: 180, zoom: 5, lng: "eng" },    //強化(裂傷)
         ];
 
@@ -179,6 +179,7 @@
         function csvDownload(gearList){
             var data = "";
             for (let i = 0; i < gearList.length; i++){
+                checkGearData(gearList[i]);
                 data +=
                     gearList[i].fileName
                     + "," + getLevel(gearList[i])
@@ -196,7 +197,7 @@
                     + "," + gearList[i].sub3OpValue
                     + "," + gearList[i].sub4OpName
                     + "," + gearList[i].sub4OpValue
-                    + "\n"
+                    + "\n";
             }
             const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
             const blob = new Blob([bom, data], {"type": "text/csv"});
@@ -206,6 +207,40 @@
             download.download = "geardata.csv";
             download.click();
             window.URL.revokeObjectURL(url);
+        }
+
+        function isNum(value, isPer, max = null, min = null){
+            const ptn = isPer ? /^[0-9]+%?$/ : /^[0-9]+$/;
+            if (!ptn.test(value))
+                return false;
+            let num = Number(value.replace("%", ""));
+            if (max != null && num > max)
+                return false;
+            if (min != null && num < min)
+                return false;
+            return true;
+        }
+
+        function checkGearData(gearData, subList){
+            let message = "";
+            message += gearData.parts == "" ? "部位不明、" : "";
+            message += gearData.rare == "" ? "レア度不明、" : "";
+            message += gearData.setName == "" ? "セット不明、" : "";
+            message += !isNum(getLevel(gearData), false) ? "レベル異常" + getLevel(gearData) + "、" : "";
+            message += !isNum(getEnhance(gearData), false, 15, 0) ? "強化数異常" + getEnhance(gearData) + "、" : "";
+            message += gearData.mainOpName == "" ? "メインOp不明、" : "";
+            message += !isNum(gearData.mainOpValue, true) ? "メインOp異常" + gearData.mainOpValue + "、" : "";
+            message += !isNum(gearData.sub1OpValue, true) ? "サブOp1異常" + gearData.sub1OpValue + "、" : "";
+            message += !isNum(gearData.sub2OpValue, true) ? "サブOp2異常" + gearData.sub2OpValue + "、" : "";
+            message += !isNum(gearData.sub3OpValue, true) ? "サブOp3異常" + gearData.sub3OpValue + "、" : "";
+            message += !isNum(gearData.sub4OpValue, true) ? "サブOp4異常" + gearData.sub4OpValue + "、" : "";
+
+            if (message == "")
+                return true;
+            else {
+                $("#error_field").append("<div>" + gearData.fileName + " : " + message + "</div>");
+                return false;
+            }
         }
 
         function parseE7OptOption(name, value){
@@ -221,6 +256,9 @@
         function e7OptDownload(gearList){
             let dataList = new Array();
             for (let i = 0; i < gearList.length; i++){
+                if (!checkGearData(gearList[i]))
+                    continue;
+
                 let subList = new Array();
                 subList.push(parseE7OptOption(gearList[i].sub1OpName, gearList[i].sub1OpValue));
                 subList.push(parseE7OptOption(gearList[i].sub2OpName, gearList[i].sub2OpValue));
@@ -319,6 +357,7 @@
 
         function readGear(){
             $("#read_button").prop("disabled", true);
+            $("#error_field").html("");
             isCsv = $("input[name=download_type]:checked").val() == "csv";
             let files = document.getElementById("gear_file").files;
             let gearList = new Array();
