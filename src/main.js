@@ -48,7 +48,7 @@ const setNameList = [
     { match: "反", langJp: "反撃", langEng: "CounterSet" },
     { match: "連", langJp: "連携", langEng: "UnitySet" },
     { match: "免疫", langJp: "免疫", langEng: "ImmunitySet" },
-    { match: "憤怒", langJp: "憤怒", langEng: "RageSetSet" },
+    { match: "憤怒", langJp: "憤怒", langEng: "RageSet" },
     { match: "貫通", langJp: "貫通", langEng: "PenetrationSet" },
     { match: "復讐", langJp: "復讐", langEng: "RevengeSet" },
     { match: "裂傷", langJp: "裂傷", langEng: "InjurySet" },
