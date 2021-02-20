@@ -1,20 +1,22 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-    <title>e7gear</title>
     <meta charset="UTF-8">
+    <title>e7gear</title>
     <script src="jquery.min.js"></script>
     <script src="tesseract.min.js"></script>
-    <script src="main.js"></script>
+    <script type="text/javascript" data-main="main.js" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.22/require.js"></script>
     <style>
-        canvas{ padding: 10px }
+        canvas {
+            padding: 10px
+        }
     </style>
 </head>
 <body>
 <div>
     <div id="config_field">
-        <input id="gear_file" type="file" multiple="multiple" onchange="changeFile()">
-        <button id="read_button" onclick="readGear()">ギア読み込み</button>
+        <input id="gear_file" type="file" multiple="multiple">
+        <button id="read_button">ギア読み込み</button>
         <input type="radio" name="download_type" value="e7opt" checked="checked" id="radio_e7opt"><label for="radio_e7opt">Optimizer用</label>
         <input type="radio" name="download_type" value="csv" id="radio_csv"><label for="radio_csv">csv</label>
     </div>
